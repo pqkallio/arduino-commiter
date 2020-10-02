@@ -1,5 +1,5 @@
-#ifndef _COMMITER_PINS_H
-#define _COMMITER_PINS_H
+#ifndef _COMMITTER_PINS_HPP
+#define _COMMITTER_PINS_HPP
 
 // LCD display pins
 #define LCD_RS 2
@@ -17,4 +17,4 @@
 // Buttons' input
 #define BTN_IN A0
 
-#endif /* _COMMITER_PINS_H */
+#endif /* _COMMITTER_PINS_HPP */

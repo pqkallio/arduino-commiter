@@ -1,5 +1,5 @@
-#ifndef _COMMITER_SETUP_H
-#define _COMMITER_SETUP_H
+#ifndef _COMMITTER_SETUP_HPP
+#define _COMMITTER_SETUP_HPP
 
 #include "../pins/pins.hpp"
 #include "../lcd/lcd.hpp"
@@ -26,4 +26,4 @@ void setup_lcd()
   lcd.print("commit magix");
 }
 
-#endif /* _COMMITER_SETUP_H */
+#endif /* _COMMITTER_SETUP_HPP */
