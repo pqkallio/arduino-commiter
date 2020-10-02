@@ -1,9 +1,9 @@
-#ifndef _COMMITER_LCD_H
-#define _COMMITER_LCD_H
+#ifndef _COMMITTER_LCD_HPP
+#define _COMMITTER_LCD_HPP
 
 #include <LiquidCrystal.h>
 #include "../pins/pins.hpp"
 
 LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
-#endif /* _COMMITER_LCD_H */
+#endif /* _COMMITTER_LCD_HPP */
