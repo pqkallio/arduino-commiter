@@ -14,7 +14,8 @@
 #define LED_BLUE 10
 #define LED_GREEN 9
 
-// Buttons' input
+// Analog inputs
 #define BTN_IN A0
+#define TEMP_IN A1
 
 #endif /* _COMMITTER_PINS_HPP */
