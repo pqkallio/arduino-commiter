@@ -3,6 +3,7 @@
 
 #include "../pins/pins.hpp"
 #include "../lcd/lcd.hpp"
+#include "../led/led.hpp"
 
 void setup_led()
 {
@@ -10,9 +11,7 @@ void setup_led()
   pinMode(LED_BLUE, OUTPUT);
   pinMode(LED_RED, OUTPUT);
 
-  analogWrite(LED_GREEN, 255);
-  analogWrite(LED_BLUE, 0);
-  analogWrite(LED_RED, 0);
+  set_led_color(GREEN);
 }
 
 void setup_lcd()

@@ -4,6 +4,9 @@
 #include "setup/setup.hpp"
 #include "button/button.hpp"
 #include "temperature/temperature.hpp"
+#include "mode/mode.hpp"
+#include "led/led.hpp"
+#include "date/date.hpp"
 
 #define TEMPERATURE_INTERVAL_MS 30000
 #define TIME_FORMAT "%02d"
@@ -13,6 +16,9 @@ unsigned long time_elapsed;
 unsigned long base_time_in_seconds = 0;
 char second_delimiter = ' ';
 char timepart[3];
+uint8_t mode;
+
+Date base_date{.day = 0, .month = 0, .year = 0, .time = 0};
 
 void setup()
 {
@@ -24,6 +30,8 @@ void setup()
 
   lcd.clear();
   Serial.begin(9600);
+
+  mode = IDLE;
 }
 
 /**
@@ -86,12 +94,29 @@ void handle_time_display(unsigned long current_time)
   time_elapsed = new_time_elapsed;
 }
 
+void idle(unsigned long current_time)
+{
+  handle_temperature_display(current_time);
+  handle_time_display(current_time);
+}
+
 void loop()
 {
   unsigned long current_time = millis();
 
-  handle_temperature_display(current_time);
-  handle_time_display(current_time);
+  if (!date_set(&base_date)) {
+    mode = ENTER_TIME;
+    set_led_color(YELLOW);
+  }
+
+  switch (mode) {
+    case ENTER_TIME:
+
+      break;
+
+    default:
+      idle(current_time);
+  }
 
   delay(50);
 }
