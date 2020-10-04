@@ -38,7 +38,7 @@ void set_led_color(uint8_t color)
       set_led_RGB((uint8_t)(b * 255), 0, 0);
       break;
     case YELLOW:
-      set_led_RGB((uint8_t)(b * 255), (uint8_t)(b * 255), 0);
+      set_led_RGB((uint8_t)(b * 50), (uint8_t)(b * 255), 0);
       break;
     default:
       break;

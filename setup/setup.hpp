@@ -3,6 +3,7 @@
 
 #include "../pins/pins.hpp"
 #include "../lcd/lcd.hpp"
+#include "../lcd/glyphs.hpp"
 #include "../led/led.hpp"
 
 void setup_led()
@@ -18,6 +19,13 @@ void setup_lcd()
 {
   lcd.begin(16, 2);
   lcd.clear();
+
+  lcd.createChar(GLYPH_CHECK, check);
+  lcd.createChar(GLYPH_CHECK_INVERTED, check_inverted);
+  lcd.createChar(GLYPH_CROSS, cross);
+  lcd.createChar(GLYPH_CROSS_INVERTED, cross_inverted);
+  lcd.createChar(GLYPH_CLOCK, clock);
+  lcd.createChar(GLYPH_TEMPERATURE, temperature);
 
   lcd.setCursor(0, 0);
   lcd.print("Ready for");

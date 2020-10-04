@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "lcd/lcd.hpp"
+#include "lcd/glyphs.hpp"
 #include "pins/pins.hpp"
 #include "setup/setup.hpp"
 #include "button/button.hpp"
@@ -47,7 +48,8 @@ void handle_temperature_display(unsigned long current_time)
     lcd.setCursor(0, 0);
     lcd.print("                ");
     lcd.setCursor(0, 0);
-    lcd.print("Temp: ");
+    lcd.write(byte(GLYPH_TEMPERATURE));
+    lcd.print(" ");
     lcd.print(celsius);
   }
 
@@ -75,6 +77,9 @@ void handle_time_display(unsigned long current_time)
     uint8_t hours = t % 24;
 
     lcd.setCursor(0, 1);
+    lcd.write(byte(GLYPH_CLOCK));
+    lcd.print(" ");
+
     sprintf(timepart, TIME_FORMAT, hours);
     lcd.print(timepart);
     lcd.print(":");
@@ -87,7 +92,7 @@ void handle_time_display(unsigned long current_time)
     lcd.print(timepart);
   } else if (new_time_elapsed >= 500 && second_delimiter != ' ') {
     second_delimiter = ' ';
-    lcd.setCursor(5, 1);
+    lcd.setCursor(7, 1);
     lcd.print(second_delimiter);
   }
 
@@ -103,12 +108,12 @@ void idle(unsigned long current_time)
 void loop()
 {
   unsigned long current_time = millis();
-
+/*
   if (!date_set(&base_date)) {
     mode = ENTER_TIME;
     set_led_color(YELLOW);
   }
-
+ */
   switch (mode) {
     case ENTER_TIME:
 
