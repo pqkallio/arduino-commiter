@@ -7,6 +7,8 @@
 #define GLYPH_CROSS_INVERTED 3
 #define GLYPH_CLOCK 4
 #define GLYPH_TEMPERATURE 5
+#define GLYPH_LEFT_BRACKET_INVERTED 6
+#define GLYPH_RIGHT_BRACKET_INVERTED 7
 
 byte check[] = {
   B00000,
@@ -72,6 +74,28 @@ byte temperature[] = {
   B11111,
   B11111,
   B01110
+};
+
+byte left_bracket_inverted[] = {
+  B10001,
+  B10111,
+  B10111,
+  B10111,
+  B10111,
+  B10111,
+  B10001,
+  B11111
+};
+
+byte right_bracket_inverted[] = {
+  B10001,
+  B11101,
+  B11101,
+  B11101,
+  B11101,
+  B11101,
+  B10001,
+  B11111
 };
 
 #endif /* _COMMITTER_GLYPHS_HPP */

@@ -26,6 +26,8 @@ void setup_lcd()
   lcd.createChar(GLYPH_CROSS_INVERTED, cross_inverted);
   lcd.createChar(GLYPH_CLOCK, clock);
   lcd.createChar(GLYPH_TEMPERATURE, temperature);
+  lcd.createChar(GLYPH_LEFT_BRACKET_INVERTED, left_bracket_inverted);
+  lcd.createChar(GLYPH_RIGHT_BRACKET_INVERTED, right_bracket_inverted);
 
   lcd.setCursor(0, 0);
   lcd.print("Ready for");
