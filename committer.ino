@@ -105,22 +105,28 @@ void idle(unsigned long current_time)
   handle_time_display(current_time);
 }
 
+void request_time(unsigned long current_time)
+{
+
+}
+
 void loop()
 {
   unsigned long current_time = millis();
-/*
+
   if (!date_set(&base_date)) {
     mode = ENTER_TIME;
     set_led_color(YELLOW);
   }
- */
+
   switch (mode) {
     case ENTER_TIME:
-
+      request_time(current_time);
       break;
 
     default:
       idle(current_time);
+      break;
   }
 
   delay(50);
