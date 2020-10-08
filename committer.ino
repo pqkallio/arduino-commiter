@@ -15,10 +15,11 @@
 LCDDisplay lcd;
 RGBLed led(LED_RED, LED_GREEN, LED_BLUE);
 ButtonStrip buttonStrip(BTN_IN);
+TemperatureSensor temperatureSensor(TEMP_IN);
 
 // Modes
 ModeInterface* mode;
-IdleMode idleMode(lcd.getDisplay(), &led, &buttonStrip, TEMPERATURE_INTERVAL_MS);
+IdleMode idleMode(&lcd, &led, &buttonStrip, &temperatureSensor, TEMPERATURE_INTERVAL_MS);
 
 Date base_date{.day = 0, .month = 0, .year = 0, .time = 0};
 

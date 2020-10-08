@@ -1,20 +1,20 @@
 #ifndef _COMMITTER_IDLEMODE_HPP
 #define _COMMITTER_IDLEMODE_HPP
 
-#include <LiquidCrystal.h>
 #include "mode.hpp"
 #include "../temperature/temperature.hpp"
 #include "../lcd/glyphs.hpp"
+#include "../lcd/lcd.hpp"
 #include "../led/led.hpp"
 #include "../button/button.hpp"
 
-#define TIME_FORMAT "%02d"
 
 class IdleMode : public ModeInterface {
 private:
-  LiquidCrystal* lcd;
+  LCDDisplay* lcd;
   RGBLed* led;
   ButtonStrip* buttonStrip;
+  TemperatureSensor* temperatureSensor;
 
   unsigned long temperatureInterval;
   unsigned long tempElapsed;
@@ -30,14 +30,9 @@ private:
     unsigned int newTempElapsed = currentTime % this->temperatureInterval;
 
     if (newTempElapsed < this->tempElapsed) {
-      float celsius = measure_celsius_temperature();
+      float celsius = this->temperatureSensor->measureCelsiusTemperature();
 
-      this->lcd->setCursor(0, 0);
-      this->lcd->print("                ");
-      this->lcd->setCursor(0, 0);
-      this->lcd->write(byte(GLYPH_TEMPERATURE));
-      this->lcd->print(" ");
-      this->lcd->print(celsius);
+      this->lcd->showTemperature(celsius);
     }
 
     this->tempElapsed = newTempElapsed;
@@ -53,47 +48,37 @@ private:
   {
     unsigned long newTimeElapsed = currentTime % 1000;
 
+    unsigned long t = this->baseTimeInSeconds + currentTime / 1000;
+
+    uint8_t seconds = t % 60;
+    t /= 60;
+    uint8_t minutes = t % 60;
+    t /= 60;
+    uint8_t hours = t % 24;
+
     if (newTimeElapsed < timeElapsed) {
       this->secondDelimiter = ':';
-      unsigned long t = this->baseTimeInSeconds + currentTime / 1000;
-
-      uint8_t seconds = t % 60;
-      t /= 60;
-      uint8_t minutes = t % 60;
-      t /= 60;
-      uint8_t hours = t % 24;
-
-      char timepart[3];
-
-      this->lcd->setCursor(0, 1);
-      this->lcd->write(byte(GLYPH_CLOCK));
-      this->lcd->print(" ");
-
-      sprintf(timepart, TIME_FORMAT, hours);
-      this->lcd->print(timepart);
-      this->lcd->print(":");
-
-      sprintf(timepart, TIME_FORMAT, minutes);
-      this->lcd->print(timepart);
-      this->lcd->print(this->secondDelimiter);
-
-      sprintf(timepart, TIME_FORMAT, seconds);
-      this->lcd->print(timepart);
-
+      this->lcd->showClock(hours, minutes, seconds, this->secondDelimiter);
     } else if (newTimeElapsed >= 500 && this->secondDelimiter != ' ') {
       this->secondDelimiter = ' ';
-      this->lcd->setCursor(7, 1);
-      this->lcd->print(this->secondDelimiter);
+      this->lcd->showClock(hours, minutes, seconds, this->secondDelimiter);
     }
 
     this->timeElapsed = newTimeElapsed;
   }
 
 public:
-  IdleMode(LiquidCrystal* lcd, RGBLed* led, ButtonStrip* buttonStrip, unsigned long temperatureInterval):
+  IdleMode(
+    LCDDisplay* lcd,
+    RGBLed* led,
+    ButtonStrip* buttonStrip,
+    TemperatureSensor* temperatureSensor,
+    unsigned long temperatureInterval
+  ):
     lcd(lcd),
     led(led),
     buttonStrip(buttonStrip),
+    temperatureSensor(temperatureSensor),
     temperatureInterval(temperatureInterval),
     tempElapsed(temperatureInterval - 1),
     timeElapsed(999)

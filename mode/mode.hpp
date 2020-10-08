@@ -1,9 +1,6 @@
 #ifndef _COMMITTER_MODE_HPP
 #define _COMMITTER_MODE_HPP
 
-#define ENTER_TIME 0
-#define IDLE 1
-
 /**
  * An interface to be implemented by all specific execution modes.
  */
