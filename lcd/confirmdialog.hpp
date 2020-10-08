@@ -4,9 +4,9 @@
 #include "lcd.hpp"
 #include "glyphs.hpp"
 
-#define NONE 0;
-#define CONFIRM 1;
-#define CANCEL 2;
+#define NONE 0
+#define CONFIRM 1
+#define CANCEL 2
 
 void print_selected(uint8_t glyph)
 {
