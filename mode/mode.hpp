@@ -18,7 +18,7 @@ public:
    * Called in each loop.
    * Must return {this} or the following mode.
    */
-  virtual ModeInterface* tick(uint8_t button, unsigned long currentTime) = 0;
+  virtual ModeInterface* tick(unsigned long currentTime) = 0;
 };
 
 #endif /* _COMMITTER_MODE_HPP */

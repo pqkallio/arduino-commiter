@@ -5,13 +5,18 @@
 #include "mode.hpp"
 #include "../temperature/temperature.hpp"
 #include "../lcd/glyphs.hpp"
+#include "../led/led.hpp"
+#include "../button/button.hpp"
 
-#define TEMPERATURE_INTERVAL_MS 30000
 #define TIME_FORMAT "%02d"
 
 class IdleMode : public ModeInterface {
 private:
   LiquidCrystal* lcd;
+  RGBLed* led;
+  ButtonStrip* buttonStrip;
+
+  unsigned long temperatureInterval;
   unsigned long tempElapsed;
   unsigned long timeElapsed;
   unsigned long baseTimeInSeconds = 0;
@@ -22,7 +27,7 @@ private:
    */
   void handleTemperatureDisplay(unsigned long currentTime)
   {
-    unsigned int newTempElapsed = currentTime % TEMPERATURE_INTERVAL_MS;
+    unsigned int newTempElapsed = currentTime % this->temperatureInterval;
 
     if (newTempElapsed < this->tempElapsed) {
       float celsius = measure_celsius_temperature();
@@ -85,12 +90,16 @@ private:
   }
 
 public:
-  IdleMode(LiquidCrystal* lcd): lcd(lcd) {
-    this->tempElapsed = TEMPERATURE_INTERVAL_MS - 1;
-    this->timeElapsed = 999;
-  }
+  IdleMode(LiquidCrystal* lcd, RGBLed* led, ButtonStrip* buttonStrip, unsigned long temperatureInterval):
+    lcd(lcd),
+    led(led),
+    buttonStrip(buttonStrip),
+    temperatureInterval(temperatureInterval),
+    tempElapsed(temperatureInterval - 1),
+    timeElapsed(999)
+  {}
 
-  ModeInterface* tick(uint8_t button, unsigned long currentTime)
+  ModeInterface* tick(unsigned long currentTime)
   {
     this->handleTemperatureDisplay(currentTime);
     this->handleTimeDisplay(currentTime);
@@ -100,7 +109,7 @@ public:
 
   void onEnter()
   {
-
+    this->led->setLedColor(LedColor::GREEN);
   }
 };
 
