@@ -21,7 +21,7 @@ TemperatureSensor temperatureSensor(TEMP_IN);
 ModeInterface* mode;
 IdleMode idleMode(&lcd, &led, &buttonStrip, &temperatureSensor, TEMPERATURE_INTERVAL_MS);
 
-Date base_date{.day = 0, .month = 0, .year = 0, .time = 0};
+Date base_date();
 
 void setup()
 {
