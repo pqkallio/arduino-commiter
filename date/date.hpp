@@ -11,12 +11,12 @@ enum Timepart {
 
 class Date {
 private:
-  uint8_t dateparts[5];
+  uint16_t dateparts[5];
   uint8_t selectedDatePart;
 
-  uint8_t getMaxForFebruary()
+  uint16_t getMaxForFebruary()
   {
-    uint8_t year = this->dateparts[Timepart::YEAR];
+    uint16_t year = this->dateparts[Timepart::YEAR];
 
     if (year % 400 == 0) {
       return 29;
@@ -30,7 +30,7 @@ private:
   }
 
 public:
-  Date(uint8_t year = 0, uint8_t month = 0, uint8_t day = 0, uint8_t time = 0): selectedDatePart(Timepart::NO_PART)
+  Date(uint16_t year = 0, uint16_t month = 0, uint16_t day = 0, uint16_t time = 0): selectedDatePart(Timepart::NO_PART)
   {
     this->dateparts[0] = 0;
     this->dateparts[1] = day;
@@ -44,7 +44,7 @@ public:
     return this->dateparts[Timepart::MONTH] && this->dateparts[Timepart::DAY];
   }
 
-  void set(uint8_t year, uint8_t month, uint8_t day, uint8_t time)
+  void set(uint16_t year, uint16_t month, uint16_t day, uint16_t time)
   {
     this->dateparts[Timepart::YEAR] = year;
     this->dateparts[Timepart::MONTH] = month;
@@ -52,27 +52,27 @@ public:
     this->dateparts[Timepart::TIME] = time;
   }
 
-  void setYear(uint8_t year)
+  void setYear(uint16_t year)
   {
     this->dateparts[Timepart::YEAR] = year;
   }
 
-  void setMonth(uint8_t month)
+  void setMonth(uint16_t month)
   {
     this->dateparts[Timepart::MONTH] = month;
   }
 
-  void setDay(uint8_t day)
+  void setDay(uint16_t day)
   {
     this->dateparts[Timepart::DAY] = day;
   }
 
-  void setTime(uint8_t time)
+  void setTime(uint16_t time)
   {
     this->dateparts[Timepart::TIME] = time;
   }
 
-  uint8_t getMaxDay()
+  uint16_t getMaxDay()
   {
     switch (this->dateparts[Timepart::MONTH]) {
       case 1:
@@ -95,22 +95,22 @@ public:
     }
   }
 
-  uint8_t getYear()
+  uint16_t getYear()
   {
     return this->dateparts[Timepart::YEAR];
   }
 
-  uint8_t getMonth()
+  uint16_t getMonth()
   {
     return this->dateparts[Timepart::MONTH];
   }
 
-  uint8_t getDay()
+  uint16_t getDay()
   {
     return this->dateparts[Timepart::DAY];
   }
 
-  uint8_t getTime()
+  uint16_t getTime()
   {
     return this->dateparts[Timepart::TIME];
   }
@@ -120,10 +120,20 @@ public:
     return this->selectedDatePart;
   }
 
-  uint8_t selectNext()
+  void selectNext()
   {
-    this->selectedDatePart++;
-    this->selectedDatePart /= 5;
+    switch (this->selectedDatePart) {
+      case Timepart::NO_PART:
+      case Timepart::YEAR:
+        this->selectedDatePart = Timepart::DAY;
+        break;
+      case Timepart::DAY:
+        this->selectedDatePart = Timepart::MONTH;
+        break;
+      case Timepart::MONTH:
+        this->selectedDatePart = Timepart::YEAR;
+        break;
+    }
   }
 };
 

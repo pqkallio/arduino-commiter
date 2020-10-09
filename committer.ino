@@ -8,6 +8,7 @@
 #include "led/led.hpp"
 #include "date/date.hpp"
 #include "mode/idlemode.hpp"
+#include "mode/entertimemode.hpp"
 
 #define TEMPERATURE_INTERVAL_MS 30000
 
@@ -17,17 +18,19 @@ RGBLed led(LED_RED, LED_GREEN, LED_BLUE);
 ButtonStrip buttonStrip(BTN_IN);
 TemperatureSensor temperatureSensor(TEMP_IN);
 
+Date baseDate(2020, 10, 9, 0);
+
 // Modes
 ModeInterface* mode;
 IdleMode idleMode(&lcd, &led, &buttonStrip, &temperatureSensor, TEMPERATURE_INTERVAL_MS);
-
-Date base_date();
+EnterTimeMode enterTimeMode(&lcd, &led, &buttonStrip, &baseDate, &idleMode);
 
 void setup()
 {
   Serial.begin(9600);
 
-  mode = &idleMode;
+  baseDate.selectNext();
+  mode = &enterTimeMode;
   mode->onEnter();
 }
 

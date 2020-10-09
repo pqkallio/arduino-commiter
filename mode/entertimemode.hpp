@@ -16,6 +16,7 @@ private:
   Date* baseDate;
   IdleMode* idleMode;
   Selection selection;
+  bool update;
 
 public:
   EnterTimeMode(
@@ -30,8 +31,26 @@ public:
     buttonStrip(buttonStrip),
     baseDate(baseDate),
     idleMode(idleMode),
-    selection(Selection::NONE_SELECTED)
+    selection(Selection::NONE_SELECTED),
+    update(true)
   {}
+
+  void onEnter()
+  {
+    this->led->setLedColor(LedColor::BLUE);
+  }
+
+  ModeInterface* tick(unsigned long currentTime)
+  {
+    if (update) {
+      update = false;
+
+      this->lcd->showConfirmationDialog();
+      this->lcd->displayDate(this->baseDate);
+    }
+
+    return this;
+  }
 };
 
 #endif /* _COMMITTER_ENTERTIMEMODE_HPP */
