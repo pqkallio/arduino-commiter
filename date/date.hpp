@@ -1,31 +1,28 @@
 #ifndef _COMMITTER_DATE_HPP
 #define _COMMITTER_DATE_HPP
 
-enum DatePartSelection {
-  UNSELECTED,
-  YEAR,
-  MONTH,
+enum Timepart {
+  NO_PART,
   DAY,
-  HOUR,
-  MINUTES,
-  SECONDS
+  MONTH,
+  YEAR,
+  TIME
 };
 
 class Date {
 private:
-  uint8_t day;
-  uint8_t month;
-  uint16_t year;
-  uint16_t time;
-  DatePartSelection selection;
+  uint8_t dateparts[5];
+  uint8_t selectedDatePart;
 
   uint8_t getMaxForFebruary()
   {
-    if (this->year % 400 == 0) {
+    uint8_t year = this->dateparts[Timepart::YEAR];
+
+    if (year % 400 == 0) {
       return 29;
-    } else if (this->year % 100 == 0) {
+    } else if (year % 100 == 0) {
       return 28;
-    } else if (this->year % 4 == 0) {
+    } else if (year % 4 == 0) {
       return 29;
     }
 
@@ -33,50 +30,51 @@ private:
   }
 
 public:
-  Date(uint8_t year = 0, uint8_t month = 0, uint8_t day = 0, uint8_t time = 0):
-    year(year),
-    month(month),
-    day(day),
-    time(time),
-    selection(DatePartSelection::UNSELECTED)
-  {}
+  Date(uint8_t year = 0, uint8_t month = 0, uint8_t day = 0, uint8_t time = 0): selectedDatePart(Timepart::NO_PART)
+  {
+    this->dateparts[0] = 0;
+    this->dateparts[1] = day;
+    this->dateparts[2] = month;
+    this->dateparts[3] = year;
+    this->dateparts[4] = time;
+  }
 
   bool isSet()
   {
-    return this->month && this->day;
+    return this->dateparts[Timepart::MONTH] && this->dateparts[Timepart::DAY];
   }
 
   void set(uint8_t year, uint8_t month, uint8_t day, uint8_t time)
   {
-    this->year = year;
-    this->month = month;
-    this->day = day;
-    this->time = time;
+    this->dateparts[Timepart::YEAR] = year;
+    this->dateparts[Timepart::MONTH] = month;
+    this->dateparts[Timepart::DAY] = day;
+    this->dateparts[Timepart::TIME] = time;
   }
 
   void setYear(uint8_t year)
   {
-    this->year = year;
+    this->dateparts[Timepart::YEAR] = year;
   }
 
   void setMonth(uint8_t month)
   {
-    this->month = month;
+    this->dateparts[Timepart::MONTH] = month;
   }
 
   void setDay(uint8_t day)
   {
-    this->day = day;
+    this->dateparts[Timepart::DAY] = day;
   }
 
   void setTime(uint8_t time)
   {
-    this->time = time;
+    this->dateparts[Timepart::TIME] = time;
   }
 
   uint8_t getMaxDay()
   {
-    switch (this->month) {
+    switch (this->dateparts[Timepart::MONTH]) {
       case 1:
       case 3:
       case 5:
@@ -95,6 +93,37 @@ public:
       default:
         return 0;
     }
+  }
+
+  uint8_t getYear()
+  {
+    return this->dateparts[Timepart::YEAR];
+  }
+
+  uint8_t getMonth()
+  {
+    return this->dateparts[Timepart::MONTH];
+  }
+
+  uint8_t getDay()
+  {
+    return this->dateparts[Timepart::DAY];
+  }
+
+  uint8_t getTime()
+  {
+    return this->dateparts[Timepart::TIME];
+  }
+
+  uint8_t getSelectedTimepart()
+  {
+    return this->selectedDatePart;
+  }
+
+  uint8_t selectNext()
+  {
+    this->selectedDatePart++;
+    this->selectedDatePart /= 5;
   }
 };
 
