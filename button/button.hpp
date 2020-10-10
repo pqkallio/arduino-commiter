@@ -1,35 +1,55 @@
 #ifndef _COMMITTER_BUTTON_HPP
 #define _COMMITTER_BUTTON_HPP
 
-#include "../pins/pins.hpp"
+enum Button {
+  NO_BUTTON,
+  LEFT,
+  RIGHT,
+  DOWN,
+  UP,
+  SELECT,
+  CANCEL
+};
 
-#define NONE 0
-#define LEFT 1
-#define RIGHT 2
-#define DOWN 3
-#define UP 4
-#define SELECT 5
-#define CANCEL 6
+class ButtonStrip {
+private:
+  Button pressed;
+  uint8_t input;
 
-uint8_t get_button()
-{
-  int btn_val = analogRead(BTN_IN);
+public:
+  ButtonStrip(uint8_t input): input(input), pressed(Button::NO_BUTTON) {}
 
-  if (btn_val > 1020) {
-    return CANCEL;
-  } else if (btn_val > 980) {
-    return SELECT;
-  } else if (btn_val > 900) {
-    return RIGHT;
-  } else if (btn_val > 670) {
-    return UP;
-  } else if (btn_val > 490) {
-    return DOWN;
-  } else if (btn_val > 0) {
-    return LEFT;
+  Button getButton()
+  {
+    Button current = Button::NO_BUTTON;
+    Button ret_val = Button::NO_BUTTON;
+
+    int btn_val = analogRead(input);
+
+    if (btn_val > 1020) {
+      current = Button::CANCEL;
+    } else if (btn_val > 980) {
+      current = Button::SELECT;
+    } else if (btn_val > 900) {
+      current = Button::RIGHT;
+    } else if (btn_val > 670) {
+      current = Button::UP;
+    } else if (btn_val > 490) {
+      current = Button::DOWN;
+    } else if (btn_val > 6) {
+      current = Button::LEFT;
+    }
+
+    if (current == pressed) {
+      ret_val = Button::NO_BUTTON;
+    } else {
+      ret_val = current;
+    }
+
+    pressed = current;
+
+    return ret_val;
   }
-
-  return NONE;
-}
+};
 
 #endif /* _COMMITTER_BUTTON_HPP */
