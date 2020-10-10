@@ -24,7 +24,7 @@ public:
     Button current = Button::NO_BUTTON;
     Button ret_val = Button::NO_BUTTON;
 
-    int btn_val = analogRead(this->input);
+    int btn_val = analogRead(input);
 
     if (btn_val > 1020) {
       current = Button::CANCEL;
@@ -40,13 +40,13 @@ public:
       current = Button::LEFT;
     }
 
-    if (current == this->pressed) {
+    if (current == pressed) {
       ret_val = Button::NO_BUTTON;
     } else {
       ret_val = current;
     }
 
-    this->pressed = current;
+    pressed = current;
 
     return ret_val;
   }

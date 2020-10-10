@@ -27,15 +27,15 @@ private:
    */
   void handleTemperatureDisplay(unsigned long currentTime)
   {
-    unsigned int newTempElapsed = currentTime % this->temperatureInterval;
+    unsigned int newTempElapsed = currentTime % temperatureInterval;
 
-    if (newTempElapsed < this->tempElapsed) {
-      float celsius = this->temperatureSensor->measureCelsiusTemperature();
+    if (newTempElapsed < tempElapsed) {
+      float celsius = temperatureSensor->measureCelsiusTemperature();
 
-      this->lcd->showTemperature(celsius);
+      lcd->showTemperature(celsius);
     }
 
-    this->tempElapsed = newTempElapsed;
+    tempElapsed = newTempElapsed;
   }
 
   /**
@@ -48,7 +48,7 @@ private:
   {
     unsigned long newTimeElapsed = currentTime % 1000;
 
-    unsigned long t = this->baseTimeInSeconds + currentTime / 1000;
+    unsigned long t = baseTimeInSeconds + currentTime / 1000;
 
     uint8_t seconds = t % 60;
     t /= 60;
@@ -57,14 +57,14 @@ private:
     uint8_t hours = t % 24;
 
     if (newTimeElapsed < timeElapsed) {
-      this->secondDelimiter = ':';
-      this->lcd->showClock(hours, minutes, seconds, this->secondDelimiter);
-    } else if (newTimeElapsed >= 500 && this->secondDelimiter != ' ') {
-      this->secondDelimiter = ' ';
-      this->lcd->showClock(hours, minutes, seconds, this->secondDelimiter);
+      secondDelimiter = ':';
+      lcd->showClock(hours, minutes, seconds, secondDelimiter);
+    } else if (newTimeElapsed >= 500 && secondDelimiter != ' ') {
+      secondDelimiter = ' ';
+      lcd->showClock(hours, minutes, seconds, secondDelimiter);
     }
 
-    this->timeElapsed = newTimeElapsed;
+    timeElapsed = newTimeElapsed;
   }
 
 public:
@@ -86,15 +86,15 @@ public:
 
   ModeInterface* tick(unsigned long currentTime)
   {
-    this->handleTemperatureDisplay(currentTime);
-    this->handleTimeDisplay(currentTime);
+    handleTemperatureDisplay(currentTime);
+    handleTimeDisplay(currentTime);
 
     return this;
   }
 
   void onEnter()
   {
-    this->led->setLedColor(LedColor::GREEN);
+    led->setLedColor(LedColor::GREEN);
   }
 };
 

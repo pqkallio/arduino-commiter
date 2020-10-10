@@ -15,7 +15,7 @@ public:
     float sum = 0.0;
 
     for (unsigned int i = 0; i < N_SAMPLES; i++) {
-      int sensor_val = analogRead(this->sensorInput);
+      int sensor_val = analogRead(sensorInput);
 
       float voltage = sensor_val / 1024.0 * 5.0;
 

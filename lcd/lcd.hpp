@@ -38,31 +38,31 @@ private:
 public:
   LCDDisplay()
   {
-    this->lcd.begin(LCDDisplay::N_COLS, LCDDisplay::N_ROWS);
-    this->lcd.clear();
+    lcd.begin(LCDDisplay::N_COLS, LCDDisplay::N_ROWS);
+    lcd.clear();
 
-    this->lcd.createChar(Glyph::CHECK, check);
-    this->lcd.createChar(Glyph::CHECK_INVERTED, check_inverted);
-    this->lcd.createChar(Glyph::CROSS, cross);
-    this->lcd.createChar(Glyph::CROSS_INVERTED, cross_inverted);
-    this->lcd.createChar(Glyph::CLOCK, clock);
-    this->lcd.createChar(Glyph::TEMPERATURE, temperature);
-    this->lcd.createChar(Glyph::LEFT_BRACKET_INVERTED, left_bracket_inverted);
-    this->lcd.createChar(Glyph::RIGHT_BRACKET_INVERTED, right_bracket_inverted);
+    lcd.createChar(Glyph::CHECK, check);
+    lcd.createChar(Glyph::CHECK_INVERTED, check_inverted);
+    lcd.createChar(Glyph::CROSS, cross);
+    lcd.createChar(Glyph::CROSS_INVERTED, cross_inverted);
+    lcd.createChar(Glyph::CLOCK, clock);
+    lcd.createChar(Glyph::TEMPERATURE, temperature);
+    lcd.createChar(Glyph::LEFT_BRACKET_INVERTED, left_bracket_inverted);
+    lcd.createChar(Glyph::RIGHT_BRACKET_INVERTED, right_bracket_inverted);
   }
 
   LiquidCrystal* getDisplay()
   {
-    return &this->lcd;
+    return &lcd;
   }
 
   void clear(int8_t row = -1)
   {
     if (row < 0) {
-      this->lcd.clear();
+      lcd.clear();
     } else if (row < LCDDisplay::N_ROWS) {
-      this->lcd.setCursor(0, row);
-      this->lcd.print("                ");
+      lcd.setCursor(0, row);
+      lcd.print("                ");
     }
   }
 
@@ -72,17 +72,17 @@ public:
     lcd.print("   ");
 
     if (selected == Selection::CONFIRM_SELECTED) {
-      this->printSelected(Glyph::CHECK_INVERTED);
+      printSelected(Glyph::CHECK_INVERTED);
     } else {
-      this->printUnselected(Glyph::CHECK);
+      printUnselected(Glyph::CHECK);
     }
 
     lcd.print("    ");
 
     if (selected == Selection::CANCEL_SELECTED) {
-      this->printSelected(Glyph::CROSS_INVERTED);
+      printSelected(Glyph::CROSS_INVERTED);
     } else {
-      this->printUnselected(Glyph::CROSS);
+      printUnselected(Glyph::CROSS);
     }
 
     lcd.print("   ");
@@ -90,31 +90,31 @@ public:
 
   void showTemperature(float temperature)
   {
-    this->clear(0);
-    this->lcd.setCursor(0, 0);
-    this->lcd.write(byte(Glyph::TEMPERATURE));
-    this->lcd.print(" ");
-    this->lcd.print(temperature);
+    clear(0);
+    lcd.setCursor(0, 0);
+    lcd.write(byte(Glyph::TEMPERATURE));
+    lcd.print(" ");
+    lcd.print(temperature);
   }
 
   void showClock(uint8_t hours, uint8_t minutes, uint8_t seconds, char secondDelimiter)
   {
     char timepart[3];
 
-    this->lcd.setCursor(0, 1);
-    this->lcd.write(byte(Glyph::CLOCK));
-    this->lcd.print(" ");
+    lcd.setCursor(0, 1);
+    lcd.write(byte(Glyph::CLOCK));
+    lcd.print(" ");
 
     sprintf(timepart, TIME_FORMAT, hours);
-    this->lcd.print(timepart);
-    this->lcd.print(":");
+    lcd.print(timepart);
+    lcd.print(":");
 
     sprintf(timepart, TIME_FORMAT, minutes);
-    this->lcd.print(timepart);
-    this->lcd.print(secondDelimiter);
+    lcd.print(timepart);
+    lcd.print(secondDelimiter);
 
     sprintf(timepart, TIME_FORMAT, seconds);
-    this->lcd.print(timepart);
+    lcd.print(timepart);
   }
 
   void displayDate(Date* date)
@@ -122,20 +122,20 @@ public:
     int8_t selectedCol = -1;
     char timepart[3];
 
-    this->clear(0);
-    this->lcd.setCursor(0, 0);
+    clear(0);
+    lcd.setCursor(0, 0);
     lcd.print("   ");
 
     sprintf(timepart, TIME_FORMAT, date->getDay());
-    this->lcd.print(timepart);
-    this->lcd.print(".");
+    lcd.print(timepart);
+    lcd.print(".");
 
     sprintf(timepart, TIME_FORMAT, date->getMonth());
-    this->lcd.print(timepart);
-    this->lcd.print(".");
+    lcd.print(timepart);
+    lcd.print(".");
 
     sprintf(timepart, TIME_FORMAT, date->getYear());
-    this->lcd.print(timepart);
+    lcd.print(timepart);
 
     switch (date->getSelectedTimepart()) {
       case Timepart::DAY:
@@ -150,10 +150,10 @@ public:
     }
 
     if (selectedCol > -1) {
-      this->lcd.setCursor(selectedCol, 0);
-      this->lcd.blink();
+      lcd.setCursor(selectedCol, 0);
+      lcd.blink();
     } else {
-      this->lcd.noBlink();
+      lcd.noBlink();
     }
   }
 };
