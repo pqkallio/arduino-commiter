@@ -7,9 +7,7 @@ enum Glyph {
   CROSS,
   CROSS_INVERTED,
   CLOCK,
-  TEMPERATURE,
-  LEFT_BRACKET_INVERTED,
-  RIGHT_BRACKET_INVERTED,
+  TEMPERATURE
 };
 
 byte check[] = {
@@ -76,28 +74,6 @@ byte temperature[] = {
   B11111,
   B11111,
   B01110
-};
-
-byte left_bracket_inverted[] = {
-  B10001,
-  B10111,
-  B10111,
-  B10111,
-  B10111,
-  B10111,
-  B10001,
-  B11111
-};
-
-byte right_bracket_inverted[] = {
-  B10001,
-  B11101,
-  B11101,
-  B11101,
-  B11101,
-  B11101,
-  B10001,
-  B11111
 };
 
 #endif /* _COMMITTER_GLYPHS_HPP */

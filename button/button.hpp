@@ -36,7 +36,7 @@ public:
       current = Button::UP;
     } else if (btn_val > 490) {
       current = Button::DOWN;
-    } else if (btn_val > 0) {
+    } else if (btn_val > 6) {
       current = Button::LEFT;
     }
 

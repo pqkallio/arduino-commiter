@@ -128,6 +128,7 @@ public:
 
   void onEnter()
   {
+    lcd->clear();
     led->setLedColor(LedColor::BLUE);
   }
 
@@ -142,7 +143,7 @@ public:
     if (update) {
       update = false;
 
-      lcd->showConfirmationDialog();
+      lcd->showConfirmationDialog(selection);
       lcd->displayDate(baseDate);
     }
 

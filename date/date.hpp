@@ -130,20 +130,6 @@ public:
     setDay(day);
   }
 
-  void decrementDay()
-  {
-    uint16_t day = getDay();
-    uint16_t maxDay = getMaxDay();
-
-    day--;
-
-    if (day < 1) {
-      day = maxDay;
-    }
-
-    setDay(day);
-  }
-
   void incrementMonth()
   {
     uint16_t month = getMonth();
@@ -283,7 +269,7 @@ public:
     selectedDatePart--;
 
     if (selectedDatePart < 1) {
-      selectedDatePart = 4;
+      selectedDatePart = 3;
     }
   }
 
@@ -291,7 +277,7 @@ public:
   {
     selectedDatePart++;
 
-    if (selectedDatePart >= 5) {
+    if (selectedDatePart > 3) {
       selectedDatePart = 1;
     }
   }

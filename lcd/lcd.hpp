@@ -21,14 +21,7 @@ private:
 
   LiquidCrystal lcd = LiquidCrystal(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
-  void printSelected(Glyph glyph)
-  {
-    lcd.write(Glyph::LEFT_BRACKET_INVERTED);
-    lcd.write(glyph);
-    lcd.write(Glyph::RIGHT_BRACKET_INVERTED);
-  }
-
-  void printUnselected(Glyph glyph)
+  void printSelection(Glyph glyph)
   {
     lcd.print("[");
     lcd.write(glyph);
@@ -47,8 +40,6 @@ public:
     lcd.createChar(Glyph::CROSS_INVERTED, cross_inverted);
     lcd.createChar(Glyph::CLOCK, clock);
     lcd.createChar(Glyph::TEMPERATURE, temperature);
-    lcd.createChar(Glyph::LEFT_BRACKET_INVERTED, left_bracket_inverted);
-    lcd.createChar(Glyph::RIGHT_BRACKET_INVERTED, right_bracket_inverted);
   }
 
   LiquidCrystal* getDisplay()
@@ -71,19 +62,12 @@ public:
     lcd.setCursor(0, 1);
     lcd.print("   ");
 
-    if (selected == Selection::CONFIRM_SELECTED) {
-      printSelected(Glyph::CHECK_INVERTED);
-    } else {
-      printUnselected(Glyph::CHECK);
-    }
+    Glyph check = selected == Selection::CONFIRM_SELECTED ? Glyph::CHECK_INVERTED : Glyph::CHECK;
+    Glyph cross = selected == Selection::CANCEL_SELECTED ? Glyph::CROSS_INVERTED : Glyph::CROSS;
 
+    printSelection(check);
     lcd.print("    ");
-
-    if (selected == Selection::CANCEL_SELECTED) {
-      printSelected(Glyph::CROSS_INVERTED);
-    } else {
-      printUnselected(Glyph::CROSS);
-    }
+    printSelection(cross);
 
     lcd.print("   ");
   }

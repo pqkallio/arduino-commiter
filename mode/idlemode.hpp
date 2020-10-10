@@ -94,6 +94,7 @@ public:
 
   void onEnter()
   {
+    lcd->clear();
     led->setLedColor(LedColor::GREEN);
   }
 };
