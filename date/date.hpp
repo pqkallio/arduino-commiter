@@ -16,7 +16,7 @@ private:
 
   uint16_t getMaxForFebruary()
   {
-    uint16_t year = this->dateparts[Timepart::YEAR];
+    uint16_t year = dateparts[Timepart::YEAR];
 
     if (year % 400 == 0) {
       return 29;
@@ -32,49 +32,194 @@ private:
 public:
   Date(uint16_t year = 0, uint16_t month = 0, uint16_t day = 0, uint16_t time = 0): selectedDatePart(Timepart::NO_PART)
   {
-    this->dateparts[0] = 0;
-    this->dateparts[1] = day;
-    this->dateparts[2] = month;
-    this->dateparts[3] = year;
-    this->dateparts[4] = time;
+    dateparts[0] = 0;
+    dateparts[1] = day;
+    dateparts[2] = month;
+    dateparts[3] = year;
+    dateparts[4] = time;
   }
 
   bool isSet()
   {
-    return this->dateparts[Timepart::MONTH] && this->dateparts[Timepart::DAY];
+    return getMonth() && getDay();
   }
 
   void set(uint16_t year, uint16_t month, uint16_t day, uint16_t time)
   {
-    this->dateparts[Timepart::YEAR] = year;
-    this->dateparts[Timepart::MONTH] = month;
-    this->dateparts[Timepart::DAY] = day;
-    this->dateparts[Timepart::TIME] = time;
+    setYear(year);
+    setMonth(month);
+    setDay(day);
+    setTime(time);
   }
 
   void setYear(uint16_t year)
   {
-    this->dateparts[Timepart::YEAR] = year;
+    dateparts[Timepart::YEAR] = year;
+    validateDay();
   }
 
   void setMonth(uint16_t month)
   {
-    this->dateparts[Timepart::MONTH] = month;
+    if (month > 0 && month < 13) {
+      dateparts[Timepart::MONTH] = month;
+      validateDay();
+    }
   }
 
   void setDay(uint16_t day)
   {
-    this->dateparts[Timepart::DAY] = day;
+    if (day > 0 && day <= getMaxDay()) {
+      dateparts[Timepart::DAY] = day;
+    }
   }
 
   void setTime(uint16_t time)
   {
-    this->dateparts[Timepart::TIME] = time;
+    if (time <= 86400) {
+      dateparts[Timepart::TIME] = time;
+    }
+  }
+
+  void validateDay()
+  {
+    uint16_t max = getMaxDay();
+
+    if (getDay() > max) {
+      setDay(max);
+    }
+  }
+
+  void incrementDay()
+  {
+    uint16_t day = getDay();
+    uint16_t maxDay = getMaxDay();
+
+    day++;
+
+    if (day > maxDay) {
+      day = 1;
+    }
+
+    setDay(day);
+  }
+
+  void decrementDay()
+  {
+    uint16_t day = getDay();
+    uint16_t maxDay = getMaxDay();
+
+    day--;
+
+    if (day < 1) {
+      day = maxDay;
+    }
+
+    setDay(day);
+  }
+
+  void decrementDay()
+  {
+    uint16_t day = getDay();
+    uint16_t maxDay = getMaxDay();
+
+    day--;
+
+    if (day < 1) {
+      day = maxDay;
+    }
+
+    setDay(day);
+  }
+
+  void incrementMonth()
+  {
+    uint16_t month = getMonth();
+
+    month++;
+
+    if (month > 12) {
+      month = 1;
+    }
+
+    setMonth(month);
+    validateDay();
+  }
+
+  void decrementMonth()
+  {
+    uint16_t month = getMonth();
+
+    month--;
+
+    if (month < 1) {
+      month = 12;
+    }
+
+    setMonth(month);
+    validateDay();
+  }
+
+  void incrementYear()
+  {
+    uint16_t year = getYear();
+
+    year++;
+
+    if (year > 9999) {
+      year = 0;
+    }
+
+    setYear(year);
+    validateDay();
+  }
+
+  void decrementYear()
+  {
+    uint16_t year = getYear();
+
+    year--;
+
+    if (year == UINT16_MAX) {
+      year = 9999;
+    }
+
+    setYear(year);
+    validateDay();
+  }
+
+  void increment()
+  {
+    switch (selectedDatePart) {
+      case Timepart::DAY:
+        incrementDay();
+        break;
+      case Timepart::MONTH:
+        incrementMonth();
+        break;
+      case Timepart::YEAR:
+        incrementYear();
+        break;
+    }
+  }
+
+  void decrement()
+  {
+    switch (selectedDatePart) {
+      case Timepart::DAY:
+        decrementDay();
+        break;
+      case Timepart::MONTH:
+        decrementMonth();
+        break;
+      case Timepart::YEAR:
+        decrementYear();
+        break;
+    }
   }
 
   uint16_t getMaxDay()
   {
-    switch (this->dateparts[Timepart::MONTH]) {
+    switch (getMonth()) {
       case 1:
       case 3:
       case 5:
@@ -89,7 +234,7 @@ public:
       case 11:
         return 30;
       case 2:
-        return this->getMaxForFebruary();
+        return getMaxForFebruary();
       default:
         return 0;
     }
@@ -97,43 +242,50 @@ public:
 
   uint16_t getYear()
   {
-    return this->dateparts[Timepart::YEAR];
+    return dateparts[Timepart::YEAR];
   }
 
   uint16_t getMonth()
   {
-    return this->dateparts[Timepart::MONTH];
+    return dateparts[Timepart::MONTH];
   }
 
   uint16_t getDay()
   {
-    return this->dateparts[Timepart::DAY];
+    return dateparts[Timepart::DAY];
   }
 
   uint16_t getTime()
   {
-    return this->dateparts[Timepart::TIME];
+    return dateparts[Timepart::TIME];
   }
 
   uint8_t getSelectedTimepart()
   {
-    return this->selectedDatePart;
+    return selectedDatePart;
+  }
+
+  void selectPrevious()
+  {
+    selectedDatePart--;
+
+    if (selectedDatePart < 1) {
+      selectedDatePart = 4;
+    }
   }
 
   void selectNext()
   {
-    switch (this->selectedDatePart) {
-      case Timepart::NO_PART:
-      case Timepart::YEAR:
-        this->selectedDatePart = Timepart::DAY;
-        break;
-      case Timepart::DAY:
-        this->selectedDatePart = Timepart::MONTH;
-        break;
-      case Timepart::MONTH:
-        this->selectedDatePart = Timepart::YEAR;
-        break;
+    selectedDatePart++;
+
+    if (selectedDatePart >= 5) {
+      selectedDatePart = 1;
     }
+  }
+
+  void unselect()
+  {
+    selectedDatePart = Timepart::NO_PART;
   }
 };
 
