@@ -1,6 +1,19 @@
 #ifndef _COMMITTER_DATE_HPP
 #define _COMMITTER_DATE_HPP
 
+#define JANUARY   1
+#define FEBRUARY  2
+#define MARCH     3
+#define APRIL     4
+#define MAY       5
+#define JUNE      6
+#define JULY      7
+#define AUGUST    8
+#define SEPTEMBER 9
+#define OCTOBER   10
+#define NOVEMBER  11
+#define DECEMBER  12
+
 enum Timepart {
   NO_PART,
   DAY,
@@ -220,20 +233,20 @@ public:
   uint16_t getMaxDay()
   {
     switch (getMonth()) {
-      case 1:
-      case 3:
-      case 5:
-      case 7:
-      case 8:
-      case 10:
-      case 12:
+      case JANUARY:
+      case MARCH:
+      case MAY:
+      case JULY:
+      case AUGUST:
+      case OCTOBER:
+      case DECEMBER:
         return 31;
-      case 4:
-      case 6:
-      case 9:
-      case 11:
+      case APRIL:
+      case JUNE:
+      case SEPTEMBER:
+      case NOVEMBER:
         return 30;
-      case 2:
+      case FEBRUARY:
         return getMaxForFebruary();
       default:
         return 0;
