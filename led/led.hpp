@@ -1,6 +1,8 @@
 #ifndef _COMMITTER_LED_HPP
 #define _COMMITTER_LED_HPP
 
+#include "../pins/pins.hpp"
+
 enum LedColor {
   BLUE,
   GREEN,
