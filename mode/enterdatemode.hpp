@@ -2,6 +2,7 @@
 #define _COMMITTER_ENTERTIMEMODE_HPP
 
 #include "mode.hpp"
+#include "enterchronosmode.hpp"
 #include "idlemode.hpp"
 #include "../lcd/lcd.hpp"
 #include "../led/led.hpp"
@@ -13,40 +14,41 @@ enum EnterTimePhase {
   CONFIRM_TIME
 };
 
-class EnterTimeMode : public ModeInterface {
+static const uint8_t LEN_DATEPARTS = 3;
+
+class EnterDateMode : public EnterChronosMode {
 private:
-  LCDDisplay* lcd;
-  RGBLed* led;
+  const Timepart TIMEPARTS[LEN_DATEPARTS] = {
+    Timepart::DAY, Timepart::MONTH, Timepart::YEAR
+  };
   ButtonStrip* buttonStrip;
-  Date* baseDate;
   IdleMode* idleMode;
-  Selection selection;
   EnterTimePhase phase;
   bool update;
 
-  ModeInterface* handleEnterTimeButtonPress(Button btn)
+  ModeInterface* handleEnterDateButtonPress(Button btn)
   {
     switch (btn) {
       case Button::RIGHT:
-        baseDate->selectNext();
+        selectNext();
         update = true;
 
         break;
 
       case Button::LEFT:
-        baseDate->selectPrevious();
+        selectPrevious();
         update = true;
 
         break;
 
       case Button::UP:
-        baseDate->increment();
+        increment();
         update = true;
 
         break;
 
       case Button::DOWN:
-        baseDate->decrement();
+        decrement();
         update = true;
 
         break;
@@ -54,7 +56,7 @@ private:
       case Button::SELECT:
         selection = Selection::CONFIRM_SELECTED;
         phase = EnterTimePhase::CONFIRM_TIME;
-        baseDate->unselect();
+        unselect();
         update = true;
 
         break;
@@ -63,7 +65,7 @@ private:
     return this;
   }
 
-  ModeInterface* handleConfirmTimeButtonPress(Button btn)
+  ModeInterface* handleConfirmDateButtonPress(Button btn)
   {
     switch (btn) {
       case Button::SELECT:
@@ -72,7 +74,7 @@ private:
       case Button::CANCEL:
         selection = Selection::NONE_SELECTED;
         phase = EnterTimePhase::ENTER_TIME;
-        baseDate->selectNext();
+        selectNext();
         update = true;
 
         break;
@@ -99,29 +101,26 @@ private:
 
     switch (phase) {
       case EnterTimePhase::ENTER_TIME:
-        return handleEnterTimeButtonPress(btn);
+        return handleEnterDateButtonPress(btn);
 
       case EnterTimePhase::CONFIRM_TIME:
-        return handleConfirmTimeButtonPress(btn);
+        return handleConfirmDateButtonPress(btn);
     }
 
     return this;
   }
 
 public:
-  EnterTimeMode(
+  EnterDateMode(
     LCDDisplay* lcd,
     RGBLed* led,
     ButtonStrip* buttonStrip,
     Date* baseDate,
     IdleMode* idleMode
   ):
-    lcd(lcd),
-    led(led),
+    EnterChronosMode(baseDate, lcd, led, Timepart::DAY),
     buttonStrip(buttonStrip),
-    baseDate(baseDate),
     idleMode(idleMode),
-    selection(Selection::NONE_SELECTED),
     phase(EnterTimePhase::ENTER_TIME),
     update(true)
   {}
@@ -143,11 +142,50 @@ public:
     if (update) {
       update = false;
 
-      lcd->showConfirmationDialog(selection);
       lcd->displayDate(baseDate);
+      lcd->showConfirmationDialog(selection);
+
+      int8_t selectedCol = -1;
+
+      switch (selectedTimePart) {
+        case Timepart::DAY:
+          selectedCol = 4;
+          break;
+        case Timepart::MONTH:
+          selectedCol = 7;
+          break;
+        case Timepart::YEAR:
+          selectedCol = 12;
+          break;
+      }
+
+      if (selectedCol > -1) {
+        lcd->setCursor(selectedCol, 0);
+        lcd->blink();
+      } else {
+        lcd->noBlink();
+      }
     }
 
     return this;
+  }
+
+  void selectPrevious()
+  {
+    selectedTimePart--;
+
+    if (selectedTimePart == Timepart::MINUTE) {
+      selectedTimePart = Timepart::YEAR;
+    }
+  }
+
+  void selectNext()
+  {
+    selectedTimePart++;
+
+    if (selectedTimePart == Timepart::HOUR) {
+      selectedTimePart = Timepart::DAY;
+    }
   }
 };
 

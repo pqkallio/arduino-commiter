@@ -101,9 +101,23 @@ public:
     lcd.print(timepart);
   }
 
+  void setCursor(uint8_t col, uint8_t row)
+  {
+    lcd.setCursor(col, row);
+  }
+
+  void blink()
+  {
+    lcd.blink();
+  }
+
+  void noBlink()
+  {
+    lcd.noBlink();
+  }
+
   void displayDate(Date* date)
   {
-    int8_t selectedCol = -1;
     char timepart[3];
 
     clear(0);
@@ -120,25 +134,6 @@ public:
 
     sprintf(timepart, TIME_FORMAT, date->getYear());
     lcd.print(timepart);
-
-    switch (date->getSelectedTimepart()) {
-      case Timepart::DAY:
-        selectedCol = 4;
-        break;
-      case Timepart::MONTH:
-        selectedCol = 7;
-        break;
-      case Timepart::YEAR:
-        selectedCol = 12;
-        break;
-    }
-
-    if (selectedCol > -1) {
-      lcd.setCursor(selectedCol, 0);
-      lcd.blink();
-    } else {
-      lcd.noBlink();
-    }
   }
 };
 
