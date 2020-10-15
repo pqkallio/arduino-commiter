@@ -113,7 +113,6 @@ public:
 
   void incrementDay()
   {
-    uint16_t day = getDay();
     uint16_t maxDay = getMaxDay();
 
     day++;
@@ -127,7 +126,6 @@ public:
 
   void decrementDay()
   {
-    uint16_t day = getDay();
     uint16_t maxDay = getMaxDay();
 
     day--;
@@ -141,8 +139,6 @@ public:
 
   void incrementMonth()
   {
-    uint16_t month = getMonth();
-
     month++;
 
     if (month > 12) {
@@ -155,8 +151,6 @@ public:
 
   void decrementMonth()
   {
-    uint16_t month = getMonth();
-
     month--;
 
     if (month < 1) {
@@ -169,8 +163,6 @@ public:
 
   void incrementYear()
   {
-    uint16_t year = getYear();
-
     year++;
 
     if (year > 9999) {
@@ -183,8 +175,6 @@ public:
 
   void decrementYear()
   {
-    uint16_t year = getYear();
-
     year--;
 
     if (year == UINT16_MAX) {
@@ -193,6 +183,107 @@ public:
 
     setYear(year);
     validateDay();
+  }
+
+  void incrementHour()
+  {
+    hour++;
+
+    if (hour > 23) {
+      hour = 0;
+    }
+  }
+
+  void decrementHour()
+  {
+    hour--;
+
+    if (hour > 23) {
+      hour = 23;
+    }
+  }
+
+  void incrementMinute()
+  {
+    minute++;
+
+    if (minute > 59) {
+      minute = 0;
+    }
+  }
+
+  void decrementMinute()
+  {
+    minute--;
+
+    if (minute > 59) {
+      minute = 59;
+    }
+  }
+
+  void incrementSecond()
+  {
+    second++;
+
+    if (second > 59) {
+      second = 0;
+    }
+  }
+
+  void decrementSecond()
+  {
+    second--;
+
+    if (second > 59) {
+      second = 59;
+    }
+  }
+
+  void increment(Timepart timepart) {
+    switch (timepart) {
+      case Timepart::DAY:
+        incrementDay();
+        break;
+      case Timepart::MONTH:
+        incrementMonth();
+        break;
+      case Timepart::YEAR:
+        incrementYear();
+        break;
+      case Timepart::HOUR:
+        incrementHour();
+        break;
+      case Timepart::MINUTE:
+        incrementMinute();
+        break;
+      case Timepart::SECOND:
+        incrementSecond();
+        break;
+    }
+  }
+
+  void decrement(Timepart timepart)
+  {
+    switch (timepart) {
+      case Timepart::DAY:
+        decrementDay();
+        break;
+      case Timepart::MONTH:
+        decrementMonth();
+        break;
+      case Timepart::YEAR:
+        decrementYear();
+        break;
+      case Timepart::HOUR:
+        decrementHour();
+        break;
+      case Timepart::MINUTE:
+        decrementMinute();
+        break;
+      case Timepart::SECOND:
+        decrementSecond();
+        break;
+    }
   }
 
   uint16_t getMaxDay()

@@ -5,68 +5,168 @@
 #include "../date/date.hpp"
 #include "../lcd/lcd.hpp"
 #include "../led/led.hpp"
+#include "../button/button.hpp"
+
+enum EnterTimePhase {
+  ENTER_TIME,
+  CONFIRM_TIME
+};
 
 class EnterChronosMode: public ModeInterface {
-protected:
-  Timepart selectedTimePart;
+private:
   Date* baseDate;
   LCDDisplay* lcd;
   RGBLed* led;
   bool update;
   Selection selection;
+  EnterTimePhase phase;
+  ButtonStrip* buttonStrip;
+  ModeInterface* previousMode;
+  ModeInterface* nextMode;
+
+  ModeInterface* handleEnterDateButtonPress(Button btn)
+  {
+    switch (btn) {
+      case Button::RIGHT:
+        selectNext();
+        update = true;
+
+        break;
+
+      case Button::LEFT:
+        selectPrevious();
+        update = true;
+
+        break;
+
+      case Button::UP:
+        incrementSelectedTimepart();
+        update = true;
+
+        break;
+
+      case Button::DOWN:
+        decrementSelectedTimepart();
+        update = true;
+
+        break;
+
+      case Button::SELECT:
+        selection = Selection::CONFIRM_SELECTED;
+        phase = EnterTimePhase::CONFIRM_TIME;
+        unselect();
+        update = true;
+
+        break;
+
+      case Button::CANCEL:
+        if (previousMode) {
+          return previousMode;
+        }
+
+        break;
+    }
+
+    return this;
+  }
+
+  ModeInterface* handleConfirmDateButtonPress(Button btn)
+  {
+    switch (btn) {
+      case Button::SELECT:
+        if (nextMode != NULL) {
+          return nextMode;
+        }
+
+        break;
+
+      case Button::CANCEL:
+        selection = Selection::NONE_SELECTED;
+        phase = EnterTimePhase::ENTER_TIME;
+        selectNext();
+        update = true;
+
+        break;
+
+      case Button::LEFT:
+        selection = Selection::CONFIRM_SELECTED;
+        update = true;
+
+        break;
+
+      case Button::RIGHT:
+        selection = Selection::CANCEL_SELECTED;
+        update = true;
+
+        break;
+    }
+
+    return this;
+  }
+
+  ModeInterface* handleButtonPress()
+  {
+    Button btn = buttonStrip->getButton();
+
+    switch (phase) {
+      case EnterTimePhase::ENTER_TIME:
+        return handleEnterDateButtonPress(btn);
+
+      case EnterTimePhase::CONFIRM_TIME:
+        return handleConfirmDateButtonPress(btn);
+    }
+
+    return this;
+  }
+
+protected:
+  Timepart selectedTimePart;
 
   void unselect()
   {
     selectedTimePart = Timepart::NO_PART;
   }
 
-  void increment()
+  void incrementSelectedTimepart()
   {
-    switch (selectedTimePart) {
-      case Timepart::DAY:
-        baseDate->incrementDay();
-        break;
-      case Timepart::MONTH:
-        baseDate->incrementMonth();
-        break;
-      case Timepart::YEAR:
-        baseDate->incrementYear();
-        break;
-    }
+    baseDate->increment(selectedTimePart);
   }
 
-  void decrement()
+  void decrementSelectedTimepart()
   {
-    switch (selectedTimePart) {
-      case Timepart::DAY:
-        baseDate->decrementDay();
-        break;
-      case Timepart::MONTH:
-        baseDate->decrementMonth();
-        break;
-      case Timepart::YEAR:
-        baseDate->decrementYear();
-        break;
-    }
+    baseDate->decrement(selectedTimePart);
   }
 
   virtual void selectNext() = 0;
   virtual void selectPrevious() = 0;
-  virtual ModeInterface* handleButtonPress() = 0;
 
 public:
   EnterChronosMode(
     Date* baseDate,
     LCDDisplay* lcd,
     RGBLed* led,
+    ButtonStrip* buttonStrip,
     Timepart selectedTimepart = Timepart::NO_PART
   ):
     baseDate(baseDate),
     selectedTimePart(selectedTimepart),
     lcd(lcd),
     led(led),
-    selection(Selection::NONE_SELECTED)
+    buttonStrip(buttonStrip),
+    nextMode(NULL),
+    previousMode(NULL),
+    selection(Selection::NONE_SELECTED),
+    phase(EnterTimePhase::ENTER_TIME),
+    update(true)
   {};
+
+  void setNextMode(ModeInterface* mode) {
+    nextMode = mode;
+  }
+
+  void setPreviousMode(ModeInterface* mode) {
+    previousMode = mode;
+  }
 
   void onEnter()
   {
