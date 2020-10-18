@@ -14,8 +14,6 @@ enum EnterTimePhase {
 
 class EnterChronosMode: public ModeInterface {
 private:
-  Date* baseDate;
-  LCDDisplay* lcd;
   RGBLed* led;
   bool update;
   Selection selection;
@@ -121,6 +119,8 @@ private:
 
 protected:
   Timepart selectedTimePart;
+  Date* baseDate;
+  LCDDisplay* lcd;
 
   void unselect()
   {
@@ -137,8 +137,15 @@ protected:
     baseDate->decrement(selectedTimePart);
   }
 
+  void showSelectionAt(uint8_t col, uint8_t row)
+  {
+    lcd->setCursor(col, row);
+    lcd->blink();
+  }
+
   virtual void selectNext() = 0;
   virtual void selectPrevious() = 0;
+  virtual void displayTime() = 0;
 
 public:
   EnterChronosMode(
@@ -186,7 +193,7 @@ public:
       update = false;
 
       lcd->showConfirmationDialog(selection);
-      lcd->displayDate(baseDate);
+      displayTime();
     }
 
     return this;

@@ -116,12 +116,12 @@ public:
     lcd.noBlink();
   }
 
-  void displayDate(Date* date)
+  void displayDate(Date* date, uint8_t row = 0)
   {
     char timepart[3];
 
-    clear(0);
-    lcd.setCursor(0, 0);
+    clear(row);
+    lcd.setCursor(0, row);
     lcd.print("   ");
 
     sprintf(timepart, TIME_FORMAT, date->getDay());
@@ -133,6 +133,26 @@ public:
     lcd.print(".");
 
     sprintf(timepart, TIME_FORMAT, date->getYear());
+    lcd.print(timepart);
+  }
+
+  void displayTime(Date* date, uint8_t row = 0)
+  {
+    char timepart[3];
+
+    clear(row);
+    lcd.setCursor(0, row);
+    lcd.print("    ");
+
+    sprintf(timepart, TIME_FORMAT, date->getHour());
+    lcd.print(timepart);
+    lcd.print(":");
+
+    sprintf(timepart, TIME_FORMAT, date->getMinute());
+    lcd.print(timepart);
+    lcd.print(":");
+
+    sprintf(timepart, TIME_FORMAT, date->getSecond());
     lcd.print(timepart);
   }
 };

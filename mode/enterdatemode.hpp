@@ -16,6 +16,27 @@ private:
     Timepart::DAY, Timepart::MONTH, Timepart::YEAR
   };
 
+protected:
+  void displayTime()
+  {
+    lcd->displayDate(baseDate);
+
+    switch (selectedTimePart) {
+      case Timepart::DAY:
+        showSelectionAt(4, 0);
+        break;
+      case Timepart::MONTH:
+        showSelectionAt(7, 0);
+        break;
+      case Timepart::YEAR:
+        showSelectionAt(12, 0);
+        break;
+      default:
+        lcd->noBlink();
+        break;
+    }
+  }
+
 public:
   EnterDateMode(
     LCDDisplay* lcd,
@@ -28,19 +49,31 @@ public:
 
   void selectPrevious()
   {
-    selectedTimePart--;
-
-    if (selectedTimePart == Timepart::MINUTE) {
-      selectedTimePart = Timepart::YEAR;
+    switch (selectedTimePart) {
+      case Timepart::MONTH:
+        selectedTimePart = Timepart::DAY;
+        break;
+      case Timepart::YEAR:
+        selectedTimePart = Timepart::MONTH;
+        break;
+      default:
+        selectedTimePart = Timepart::YEAR;
+        break;
     }
   }
 
   void selectNext()
   {
-    selectedTimePart++;
-
-    if (selectedTimePart == Timepart::HOUR) {
-      selectedTimePart = Timepart::DAY;
+    switch (selectedTimePart) {
+      case Timepart::DAY:
+        selectedTimePart = Timepart::MONTH;
+        break;
+      case Timepart::MONTH:
+        selectedTimePart = Timepart::YEAR;
+        break;
+      default:
+        selectedTimePart = Timepart::DAY;
+        break;
     }
   }
 };

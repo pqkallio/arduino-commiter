@@ -16,6 +16,27 @@ private:
     Timepart::HOUR, Timepart::MINUTE, Timepart::SECOND
   };
 
+protected:
+  void displayTime()
+  {
+    lcd->displayTime(baseDate);
+
+    switch (selectedTimePart) {
+      case Timepart::HOUR:
+        showSelectionAt(5, 0);
+        break;
+      case Timepart::MINUTE:
+        showSelectionAt(8, 0);
+        break;
+      case Timepart::SECOND:
+        showSelectionAt(11, 0);
+        break;
+      default:
+        lcd->noBlink();
+        break;
+    }
+  }
+
 public:
   EnterTimeMode(
     LCDDisplay* lcd,
@@ -28,19 +49,31 @@ public:
 
   void selectPrevious()
   {
-    selectedTimePart--;
-
-    if (selectedTimePart == Timepart::YEAR) {
-      selectedTimePart = Timepart::SECOND;
+    switch (selectedTimePart) {
+      case Timepart::MINUTE:
+        selectedTimePart = Timepart::HOUR;
+        break;
+      case Timepart::SECOND:
+        selectedTimePart = Timepart::MINUTE;
+        break;
+      default:
+        selectedTimePart = Timepart::SECOND;
+        break;
     }
   }
 
   void selectNext()
   {
-    selectedTimePart++;
-
-    if (selectedTimePart == Timepart::DAY) {
-      selectedTimePart = Timepart::HOUR;
+    switch (selectedTimePart) {
+      case Timepart::HOUR:
+        selectedTimePart = Timepart::MINUTE;
+        break;
+      case Timepart::MINUTE:
+        selectedTimePart = Timepart::SECOND;
+        break;
+      default:
+        selectedTimePart = Timepart::HOUR;
+        break;
     }
   }
 };
