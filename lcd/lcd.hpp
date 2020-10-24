@@ -101,13 +101,27 @@ public:
     lcd.print(timepart);
   }
 
-  void displayDate(Date* date)
+  void setCursor(uint8_t col, uint8_t row)
   {
-    int8_t selectedCol = -1;
+    lcd.setCursor(col, row);
+  }
+
+  void blink()
+  {
+    lcd.blink();
+  }
+
+  void noBlink()
+  {
+    lcd.noBlink();
+  }
+
+  void displayDate(Date* date, uint8_t row = 0)
+  {
     char timepart[3];
 
-    clear(0);
-    lcd.setCursor(0, 0);
+    clear(row);
+    lcd.setCursor(0, row);
     lcd.print("   ");
 
     sprintf(timepart, TIME_FORMAT, date->getDay());
@@ -120,25 +134,26 @@ public:
 
     sprintf(timepart, TIME_FORMAT, date->getYear());
     lcd.print(timepart);
+  }
 
-    switch (date->getSelectedTimepart()) {
-      case Timepart::DAY:
-        selectedCol = 4;
-        break;
-      case Timepart::MONTH:
-        selectedCol = 7;
-        break;
-      case Timepart::YEAR:
-        selectedCol = 12;
-        break;
-    }
+  void displayTime(Date* date, uint8_t row = 0)
+  {
+    char timepart[3];
 
-    if (selectedCol > -1) {
-      lcd.setCursor(selectedCol, 0);
-      lcd.blink();
-    } else {
-      lcd.noBlink();
-    }
+    clear(row);
+    lcd.setCursor(0, row);
+    lcd.print("    ");
+
+    sprintf(timepart, TIME_FORMAT, date->getHour());
+    lcd.print(timepart);
+    lcd.print(":");
+
+    sprintf(timepart, TIME_FORMAT, date->getMinute());
+    lcd.print(timepart);
+    lcd.print(":");
+
+    sprintf(timepart, TIME_FORMAT, date->getSecond());
+    lcd.print(timepart);
   }
 };
 

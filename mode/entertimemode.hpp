@@ -2,110 +2,39 @@
 #define _COMMITTER_ENTERTIMEMODE_HPP
 
 #include "mode.hpp"
-#include "idlemode.hpp"
+#include "enterchronosmode.hpp"
 #include "../lcd/lcd.hpp"
 #include "../led/led.hpp"
 #include "../button/button.hpp"
 #include "../date/date.hpp"
 
-enum EnterTimePhase {
-  ENTER_TIME,
-  CONFIRM_TIME
-};
+static const uint8_t LEN_TIMEPARTS = 3;
 
-class EnterTimeMode : public ModeInterface {
+class EnterTimeMode : public EnterChronosMode {
 private:
-  LCDDisplay* lcd;
-  RGBLed* led;
-  ButtonStrip* buttonStrip;
-  Date* baseDate;
-  IdleMode* idleMode;
-  Selection selection;
-  EnterTimePhase phase;
-  bool update;
+  const Timepart TIMEPARTS[LEN_TIMEPARTS] = {
+    Timepart::HOUR, Timepart::MINUTE, Timepart::SECOND
+  };
 
-  ModeInterface* handleEnterTimeButtonPress(Button btn)
+protected:
+  void displayTime()
   {
-    switch (btn) {
-      case Button::RIGHT:
-        baseDate->selectNext();
-        update = true;
+    lcd->displayTime(baseDate);
 
+    switch (selectedTimePart) {
+      case Timepart::HOUR:
+        showSelectionAt(5, 0);
         break;
-
-      case Button::LEFT:
-        baseDate->selectPrevious();
-        update = true;
-
+      case Timepart::MINUTE:
+        showSelectionAt(8, 0);
         break;
-
-      case Button::UP:
-        baseDate->increment();
-        update = true;
-
+      case Timepart::SECOND:
+        showSelectionAt(11, 0);
         break;
-
-      case Button::DOWN:
-        baseDate->decrement();
-        update = true;
-
-        break;
-
-      case Button::SELECT:
-        selection = Selection::CONFIRM_SELECTED;
-        phase = EnterTimePhase::CONFIRM_TIME;
-        baseDate->unselect();
-        update = true;
-
+      default:
+        lcd->noBlink();
         break;
     }
-
-    return this;
-  }
-
-  ModeInterface* handleConfirmTimeButtonPress(Button btn)
-  {
-    switch (btn) {
-      case Button::SELECT:
-        return idleMode;
-
-      case Button::CANCEL:
-        selection = Selection::NONE_SELECTED;
-        phase = EnterTimePhase::ENTER_TIME;
-        baseDate->selectNext();
-        update = true;
-
-        break;
-
-      case Button::LEFT:
-        selection = Selection::CONFIRM_SELECTED;
-        update = true;
-
-        break;
-
-      case Button::RIGHT:
-        selection = Selection::CANCEL_SELECTED;
-        update = true;
-
-        break;
-    }
-
-    return this;
-  }
-
-  ModeInterface* handleButtonPress()
-  {
-    Button btn = buttonStrip->getButton();
-
-    switch (phase) {
-      case EnterTimePhase::ENTER_TIME:
-        return handleEnterTimeButtonPress(btn);
-
-      case EnterTimePhase::CONFIRM_TIME:
-        return handleConfirmTimeButtonPress(btn);
-    }
-
-    return this;
   }
 
 public:
@@ -113,41 +42,39 @@ public:
     LCDDisplay* lcd,
     RGBLed* led,
     ButtonStrip* buttonStrip,
-    Date* baseDate,
-    IdleMode* idleMode
+    Date* baseDate
   ):
-    lcd(lcd),
-    led(led),
-    buttonStrip(buttonStrip),
-    baseDate(baseDate),
-    idleMode(idleMode),
-    selection(Selection::NONE_SELECTED),
-    phase(EnterTimePhase::ENTER_TIME),
-    update(true)
+    EnterChronosMode(baseDate, lcd, led, buttonStrip, Timepart::HOUR)
   {}
 
-  void onEnter()
+  void selectPrevious()
   {
-    lcd->clear();
-    led->setLedColor(LedColor::BLUE);
+    switch (selectedTimePart) {
+      case Timepart::MINUTE:
+        selectedTimePart = Timepart::HOUR;
+        break;
+      case Timepart::SECOND:
+        selectedTimePart = Timepart::MINUTE;
+        break;
+      default:
+        selectedTimePart = Timepart::SECOND;
+        break;
+    }
   }
 
-  ModeInterface* tick(unsigned long currentTime)
+  void selectNext()
   {
-    ModeInterface* nextMode = handleButtonPress();
-
-    if (nextMode != this) {
-      return nextMode;
+    switch (selectedTimePart) {
+      case Timepart::HOUR:
+        selectedTimePart = Timepart::MINUTE;
+        break;
+      case Timepart::MINUTE:
+        selectedTimePart = Timepart::SECOND;
+        break;
+      default:
+        selectedTimePart = Timepart::HOUR;
+        break;
     }
-
-    if (update) {
-      update = false;
-
-      lcd->showConfirmationDialog(selection);
-      lcd->displayDate(baseDate);
-    }
-
-    return this;
   }
 };
 

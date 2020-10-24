@@ -1,6 +1,8 @@
 #ifndef _COMMITTER_DATE_HPP
 #define _COMMITTER_DATE_HPP
 
+#include "timepart.hpp"
+
 #define JANUARY   1
 #define FEBRUARY  2
 #define MARCH     3
@@ -14,23 +16,19 @@
 #define NOVEMBER  11
 #define DECEMBER  12
 
-enum Timepart {
-  NO_PART,
-  DAY,
-  MONTH,
-  YEAR,
-  TIME
-};
-
 class Date {
 private:
+  uint8_t day;
+  uint8_t month;
+  uint16_t year;
+  uint8_t hour;
+  uint8_t minute;
+  uint8_t second;
+
   uint16_t dateparts[5];
-  uint8_t selectedDatePart;
 
   uint16_t getMaxForFebruary()
   {
-    uint16_t year = dateparts[Timepart::YEAR];
-
     if (year % 400 == 0) {
       return 29;
     } else if (year % 100 == 0) {
@@ -43,14 +41,9 @@ private:
   }
 
 public:
-  Date(uint16_t year = 0, uint16_t month = 0, uint16_t day = 0, uint16_t time = 0): selectedDatePart(Timepart::NO_PART)
-  {
-    dateparts[0] = 0;
-    dateparts[1] = day;
-    dateparts[2] = month;
-    dateparts[3] = year;
-    dateparts[4] = time;
-  }
+  Date(uint16_t year = 0, uint8_t month = 0, uint8_t day = 0, uint8_t hour = 0, uint8_t minute = 0, uint8_t second = 0)
+    : year(year), month(month), day(day), hour(hour), minute(minute), second(second)
+  {}
 
   bool isSet()
   {
@@ -62,19 +55,21 @@ public:
     setYear(year);
     setMonth(month);
     setDay(day);
-    setTime(time);
+    setHour(time / 3600);
+    setMinute(time % 3600 / 60);
+    setSecond(time % 60);
   }
 
   void setYear(uint16_t year)
   {
-    dateparts[Timepart::YEAR] = year;
+    this->year = year;
     validateDay();
   }
 
   void setMonth(uint16_t month)
   {
     if (month > 0 && month < 13) {
-      dateparts[Timepart::MONTH] = month;
+      this->month = month;
       validateDay();
     }
   }
@@ -82,14 +77,28 @@ public:
   void setDay(uint16_t day)
   {
     if (day > 0 && day <= getMaxDay()) {
-      dateparts[Timepart::DAY] = day;
+      this->day = day;
     }
   }
 
-  void setTime(uint16_t time)
+  void setHour(uint8_t hour)
   {
-    if (time <= 86400) {
-      dateparts[Timepart::TIME] = time;
+    if (hour < 25) {
+      this->hour = hour;
+    }
+  }
+
+  void setMinute(uint8_t minute)
+  {
+    if (minute < 60) {
+      this->minute = minute;
+    }
+  }
+
+  void setSecond(uint8_t second)
+  {
+    if (second < 60) {
+      this->second = second;
     }
   }
 
@@ -104,7 +113,6 @@ public:
 
   void incrementDay()
   {
-    uint16_t day = getDay();
     uint16_t maxDay = getMaxDay();
 
     day++;
@@ -118,7 +126,6 @@ public:
 
   void decrementDay()
   {
-    uint16_t day = getDay();
     uint16_t maxDay = getMaxDay();
 
     day--;
@@ -132,8 +139,6 @@ public:
 
   void incrementMonth()
   {
-    uint16_t month = getMonth();
-
     month++;
 
     if (month > 12) {
@@ -146,8 +151,6 @@ public:
 
   void decrementMonth()
   {
-    uint16_t month = getMonth();
-
     month--;
 
     if (month < 1) {
@@ -160,8 +163,6 @@ public:
 
   void incrementYear()
   {
-    uint16_t year = getYear();
-
     year++;
 
     if (year > 9999) {
@@ -174,8 +175,6 @@ public:
 
   void decrementYear()
   {
-    uint16_t year = getYear();
-
     year--;
 
     if (year == UINT16_MAX) {
@@ -186,9 +185,62 @@ public:
     validateDay();
   }
 
-  void increment()
+  void incrementHour()
   {
-    switch (selectedDatePart) {
+    hour++;
+
+    if (hour > 23) {
+      hour = 0;
+    }
+  }
+
+  void decrementHour()
+  {
+    hour--;
+
+    if (hour > 23) {
+      hour = 23;
+    }
+  }
+
+  void incrementMinute()
+  {
+    minute++;
+
+    if (minute > 59) {
+      minute = 0;
+    }
+  }
+
+  void decrementMinute()
+  {
+    minute--;
+
+    if (minute > 59) {
+      minute = 59;
+    }
+  }
+
+  void incrementSecond()
+  {
+    second++;
+
+    if (second > 59) {
+      second = 0;
+    }
+  }
+
+  void decrementSecond()
+  {
+    second--;
+
+    if (second > 59) {
+      second = 59;
+    }
+  }
+
+  void increment(Timepart timepart) {
+    switch (timepart) {
       case Timepart::DAY:
         incrementDay();
         break;
@@ -198,12 +250,21 @@ public:
       case Timepart::YEAR:
         incrementYear();
         break;
+      case Timepart::HOUR:
+        incrementHour();
+        break;
+      case Timepart::MINUTE:
+        incrementMinute();
+        break;
+      case Timepart::SECOND:
+        incrementSecond();
+        break;
     }
   }
 
-  void decrement()
+  void decrement(Timepart timepart)
   {
-    switch (selectedDatePart) {
+    switch (timepart) {
       case Timepart::DAY:
         decrementDay();
         break;
@@ -212,6 +273,15 @@ public:
         break;
       case Timepart::YEAR:
         decrementYear();
+        break;
+      case Timepart::HOUR:
+        decrementHour();
+        break;
+      case Timepart::MINUTE:
+        decrementMinute();
+        break;
+      case Timepart::SECOND:
+        decrementSecond();
         break;
     }
   }
@@ -241,50 +311,37 @@ public:
 
   uint16_t getYear()
   {
-    return dateparts[Timepart::YEAR];
+    return year;
   }
 
   uint16_t getMonth()
   {
-    return dateparts[Timepart::MONTH];
+    return month;
   }
 
   uint16_t getDay()
   {
-    return dateparts[Timepart::DAY];
+    return day;
+  }
+
+  uint8_t getHour()
+  {
+    return hour;
+  }
+
+  uint8_t getMinute()
+  {
+    return minute;
+  }
+
+  uint8_t getSecond()
+  {
+    return second;
   }
 
   uint16_t getTime()
   {
-    return dateparts[Timepart::TIME];
-  }
-
-  uint8_t getSelectedTimepart()
-  {
-    return selectedDatePart;
-  }
-
-  void selectPrevious()
-  {
-    selectedDatePart--;
-
-    if (selectedDatePart < 1) {
-      selectedDatePart = 3;
-    }
-  }
-
-  void selectNext()
-  {
-    selectedDatePart++;
-
-    if (selectedDatePart > 3) {
-      selectedDatePart = 1;
-    }
-  }
-
-  void unselect()
-  {
-    selectedDatePart = Timepart::NO_PART;
+    return 3600 * hour + 60 * minute + second;
   }
 };
 

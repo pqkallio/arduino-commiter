@@ -1,0 +1,14 @@
+#ifndef _COMMITTER_TIMEPART_HPP
+#define _COMMITTER_TIMEPART_HPP
+
+enum Timepart {
+  NO_PART,
+  DAY,
+  MONTH,
+  YEAR,
+  HOUR,
+  MINUTE,
+  SECOND,
+};
+
+#endif /* _COMMITTER_TIMEPART_HPP */
